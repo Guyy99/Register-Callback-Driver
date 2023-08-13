@@ -2,7 +2,9 @@
 
 #include "memory/memory.h"
 
-#define key_val 69420
+inline const char* k = "__guyy__ on dc";
+inline ANSI_STRING AS = { 0 };
+inline UNICODE_STRING key = { 0 };
 
 #define print(x, ...) DbgPrintEx(0, 0, x, __VA_ARGS__)
 
@@ -17,7 +19,6 @@ enum requests
 
 struct KM_REQ
 {
-	uintptr_t key;
 	uintptr_t request;
 	uintptr_t address;
 	uintptr_t PID;
@@ -31,8 +32,7 @@ struct KM_REQ
 namespace callback
 {
 
-	inline EX_CALLBACK_FUNCTION registry;
+	inline EX_CALLBACK_FUNCTION registry; // callback function
 	inline LARGE_INTEGER cookie;
-	inline PEPROCESS um;
 	NTSTATUS init();
-}
+}	

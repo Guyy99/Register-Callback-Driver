@@ -4,7 +4,10 @@
 
 NTSTATUS callback::init()
 {
-    NTSTATUS status = CmRegisterCallback(callback::registry, NULL, &cookie);
+    RtlInitAnsiString(&AS, k);
+    RtlAnsiStringToUnicodeString(&key, &AS, true); // changes const char* to unicode string
+
+    NTSTATUS status = CmRegisterCallback(callback::registry, NULL, &cookie); // registers callback
 
     if (status != STATUS_SUCCESS)
     {
@@ -17,7 +20,7 @@ NTSTATUS callback::init()
     return STATUS_SUCCESS;
 }
 
-
+// Registry callback function, called every time a registry key is modified/created/deleted etc
 
 _Use_decl_annotations_
 NTSTATUS
@@ -27,27 +30,27 @@ callback::registry(
     PVOID  Argument2
 )
 {
-
-
     if (Argument1 != (PVOID)RegNtSetValueKey) // checks to make sure that its a key value change
         return STATUS_SUCCESS;
 
-    REG_POST_OPERATION_INFORMATION* postInfo = (REG_POST_OPERATION_INFORMATION*)Argument2;
-    REG_SET_VALUE_KEY_INFORMATION* preInfo = (REG_SET_VALUE_KEY_INFORMATION*)postInfo->PreInformation;
-    
-    if (RtlEqualUnicodeString(preInfo->ValueName, &MyKey, TRUE) == 0)
-        return STATUS_SUCCESS;
+    REG_SET_VALUE_KEY_INFORMATION* preInfo = (REG_SET_VALUE_KEY_INFORMATION*)Argument2;
 
-    if (preInfo->DataSize != sizeof(uintptr_t)) // checks data is a pointer
+    
+    if (RtlEqualUnicodeString(preInfo->ValueName, &key, TRUE) == 0) // checks if registry key name is equal to our key
         return STATUS_SUCCESS;
     
     KM_REQ* request = *(KM_REQ**)preInfo->Data;
 
     if (!request) return STATUS_SUCCESS;
 
-    if (request->key != key_val) return STATUS_SUCCESS;
-
     print("got the cheeky request pointer");
+
+    // handle requests here
+
+    if (request->request == REQUEST_PID)
+    {
+        request->PID = (uintptr_t)memory::get_process_id(request->processName);
+    }
 
    
    

@@ -90,6 +90,7 @@
     <ClCompile>
       <CallingConvention>FastCall</CallingConvention>
       <LanguageStandard>stdcpp20</LanguageStandard>
+      <TreatWarningAsError>false</TreatWarningAsError>
     </ClCompile>
     <Link>
       <EntryPointSymbol>DriverEntry</EntryPointSymbol>
@@ -102,6 +103,7 @@
     <ClCompile>
       <CallingConvention>FastCall</CallingConvention>
       <LanguageStandard>stdcpp20</LanguageStandard>
+      <TreatWarningAsError>false</TreatWarningAsError>
     </ClCompile>
     <Link>
       <EntryPointSymbol>DriverEntry</EntryPointSymbol>

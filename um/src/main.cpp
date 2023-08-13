@@ -6,9 +6,8 @@ int main()
 {
     driver* km = new driver;
 
-    //km->procID("cmd.exe");
+    std::cout << std::hex << km->procID("cmd.exe") << std::endl;
 
-    std::cout << std::hex << GetCurrentProcessId() << std::endl;
     std::cin.ignore();
 
     delete km;

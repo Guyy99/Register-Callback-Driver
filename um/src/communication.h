@@ -2,7 +2,7 @@
 
 #include <windows.h>
 
-#define key_val 69420
+inline const char* key = "__guyy__ on dc";
 
 enum requests
 {
@@ -15,7 +15,6 @@ enum requests
 
 struct KM_REQ
 {
-	uintptr_t key = key_val;
 	uintptr_t request;
 	uintptr_t address;
 	uintptr_t PID;
@@ -30,32 +29,27 @@ class driver
 private:
 
 	HKEY reg_key;
-	LPCWSTR reg_key_name = (LPCWSTR)"km_req";
+	
 
 	KM_REQ instructions;
 
 	void make_request()
 	{
-		RegSetValueExW(reg_key, reg_key_name, 0, REG_QWORD, (const BYTE*)&instructions, sizeof(uintptr_t));
+		RegOpenKeyExA(HKEY_LOCAL_MACHINE, "", 0, KEY_ALL_ACCESS, &reg_key); // opens a registry key
+
+		if (reg_key == NULL || reg_key == INVALID_HANDLE_VALUE) {
+			return;
+		}
+		void* val = (void*)&instructions;
+
+		RegSetValueExA(reg_key, key, 0, REG_QWORD, reinterpret_cast<BYTE*>(&val), sizeof(uint64_t)); // writes a pointer to our instructions in that registry key, with our key as the name
 	}
 
 public:
 
-	driver()
-	{
-		LSTATUS status = RegOpenKeyW(HKEY_LOCAL_MACHINE, reg_key_name, &reg_key);
-		if (status != ERROR_SUCCESS)
-		{
-			RegCreateKeyA(HKEY_LOCAL_MACHINE, (LPCSTR)reg_key_name, &reg_key);
-		}
+	driver() {}
 
-		RegSetValueExW(reg_key, reg_key_name, 0, REG_QWORD, (const BYTE*)GetCurrentProcessId(), sizeof(uintptr_t));
-	}
-
-	~driver()
-	{
-		RegCloseKey(reg_key);
-	}
+	// modify request values here to return different values from kernel
 
 	uintptr_t procID(const char* process)
 	{
